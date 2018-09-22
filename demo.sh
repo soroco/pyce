@@ -23,7 +23,7 @@ YELLOW='\033[1;33m'
 GRAY='\033[1;30m'
 RESET='\033[0m'
 
-if [[ -v "PYTHON" ]]
+if [ -v "PYTHON" ]
 then
     printf "${GRAY}Using Python: ${PYTHON}\n"
 else
