@@ -23,7 +23,7 @@ PYCE-formatted, encrypted files.
 
 import sys
 from importlib._bootstrap_external import (_compile_bytecode,
-                                           _validate_bytecode_header)
+                                           _classify_pyc)
 from importlib.machinery import (FileFinder, ModuleSpec, PathFinder,
                                  SourcelessFileLoader)
 from os.path import normcase, relpath
@@ -54,8 +54,8 @@ class PYCEFileLoader(SourcelessFileLoader):
         """
         super().__init__(fullname, path)
 
-    # Augmented from original Python 3.5 source:
-    # https://github.com/python/cpython/blob/3.5/Lib/importlib/_bootstrap_external.py#L901
+    # Augmented from original Python 3.7 source:
+    # https://github.com/python/cpython/blob/3.7/Lib/importlib/_bootstrap_external.py#L992
     def get_code(self, fullname: str) -> Any:
         """
         Decrypt, and interpret as Python bytecode into a module return.
@@ -72,9 +72,19 @@ class PYCEFileLoader(SourcelessFileLoader):
         # It is important to normalize path case for platforms like Windows
         data = decrypt(data, PYCEPathFinder.KEYS[normcase(relpath(path))])
 
-        bytes_data = _validate_bytecode_header(data, name=fullname, path=path)
+        # Call _classify_pyc to do basic validation of the pyc but ignore the
+        # result. There's no source to check against.
+        exc_details = {
+            'name': fullname,
+            'path': path,
+        }
+        _classify_pyc(data, fullname, exc_details)
 
-        return _compile_bytecode(bytes_data, name=fullname, bytecode_path=path)
+        return _compile_bytecode(
+            memoryview(data)[16:],
+            name=fullname,
+            bytecode_path=path,
+        )
 
 
 class PYCEFileFinder(FileFinder):
