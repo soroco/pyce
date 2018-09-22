@@ -49,7 +49,7 @@ setup(
         'Operating System :: Microsoft :: Windows :: Windows 10',
         'Operating System :: Microsoft :: Windows :: Windows Server 2008',
         'Operating System :: POSIX :: Linux',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
     description='Execute encrypted Python bytecode.',  # Required
     install_requires=['cryptography==2.1.4'],  # Optional
@@ -63,7 +63,7 @@ setup(
     platforms=['Windows 10', 'Windows Server 2008', 'Windows Server 2012',
                'Linux'],  # Optional
     packages=find_packages(exclude=[]),  # Required
-    python_requires='>=3.6, <=3.7',
+    python_requires='>=3.7, <3.8',
     url='https://github.com/soroco/pyce',  # Optional
     version=__version__,  # Required
 )
