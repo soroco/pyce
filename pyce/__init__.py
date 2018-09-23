@@ -38,4 +38,4 @@ from pyce._imports import PYCEPathFinder, PYCEFileLoader
 
 
 __all__ = ['encrypt_path', 'HMACFailureException', 'PYCEPathFinder']
-__version__ = '1.0.0'
+__version__ = '2.0.0'
