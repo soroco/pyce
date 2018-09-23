@@ -26,10 +26,9 @@ from importlib._bootstrap_external import (_compile_bytecode,
                                            _classify_pyc)
 from importlib.machinery import (FileFinder, ModuleSpec, PathFinder,
                                  SourcelessFileLoader)
-from os.path import normcase, relpath
 from typing import Any, Dict, List, Optional, Tuple
 
-from pyce._crypto import decrypt
+from pyce._crypto import decrypt, srchash
 
 # Globals
 EXTENSIONS = ['.pyce']
@@ -69,8 +68,10 @@ class PYCEFileLoader(SourcelessFileLoader):
         path = self.get_filename(fullname)
         data = self.get_data(path)
 
-        # It is important to normalize path case for platforms like Windows
-        data = decrypt(data, PYCEPathFinder.KEYS[normcase(relpath(path))])
+        # Decrypt the code. Use a hash of the encrypted data to look up the
+        # required encryption key.
+        data_hash = srchash(data).hexdigest()
+        data = decrypt(data, PYCEPathFinder.KEYS[data_hash])
 
         # Call _classify_pyc to do basic validation of the pyc but ignore the
         # result. There's no source to check against.
