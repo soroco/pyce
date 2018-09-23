@@ -25,43 +25,56 @@ RESET='\033[0m'
 
 if [ -v "PYTHON" ]
 then
-    printf "${GRAY}Using Python: ${PYTHON}\n"
+    printf "${GRAY}Using Python: ${PYTHON}\n\n"
 else
     PYTHON=python3
 fi
 
-printf "${LIGHT_GRAY}--- Step 1: Compile Python Source to Bytecode ---${YELLOW}\n"
-rm -rf pyce/__pycache__
-$PYTHON -m compileall -b pyce/hello.py
-rm pyce/hello.py
-printf "${LIGHT_GRAY}> ls pyce${GRAY}\n"
-ls pyce
+printf "${LIGHT_GRAY}--- Step 0: Inspect Python Source ---${YELLOW}\n"
+printf "${LIGHT_GRAY}> pygmentize -f terminal pyce/hello.py${RESET}\n"
+pygmentize -f terminal pyce/hello.py
 read
 
-printf "${LIGHT_GRAY}--- Step 2: Encrypt Python Bytecode ---${GRAY}\n"
-KEYS=`$PYTHON -c 'from pyce import encrypt_path; \
-                  print(encrypt_path("pyce/hello.pyc"), end="")'`
+printf "${LIGHT_GRAY}--- Step 1: Make tmpdir, copy Python Source to tmpdir ---${YELLOW}\n"
+TMPDIR=`mktemp -d`
+cp pyce/hello.py $TMPDIR/
+printf "${LIGHT_GRAY}> ls ${TMPDIR}${GRAY}\n"
+ls $TMPDIR
+read
+
+printf "${LIGHT_GRAY}--- Step 2: Compile Python Source to Bytecode ---${YELLOW}\n"
+$PYTHON -m compileall -b ${TMPDIR}/hello.py
+rm $TMPDIR/hello.py
+printf "${LIGHT_GRAY}> ls ${TMPDIR}${GRAY}\n"
+ls $TMPDIR
+read
+printf "${LIGHT_GRAY}> xxd ${TMPDIR}/hello.pyc${GRAY}\n"
+xxd ${TMPDIR}/hello.pyc
+read
+
+printf "${LIGHT_GRAY}--- Step 3: Encrypt Python Bytecode ---${GRAY}\n"
+KEYS=`$PYTHON -c "from pyce import encrypt_path; \
+                  from os import chdir; \
+                  chdir('${TMPDIR}'); \
+                  print(encrypt_path('hello.pyc'), end='')"`
 printf "${YELLOW}${KEYS}\n"
-printf "${LIGHT_GRAY}> ls pyce${GRAY}\n"
-ls pyce
-printf "${LIGHT_GRAY}> ls pyce/__pycache__${GRAY}\n"
-ls pyce/__pycache__
+printf "${LIGHT_GRAY}> ls ${TMPDIR}${GRAY}\n"
+ls $TMPDIR
 read
 
-printf "${LIGHT_GRAY}--- Step 3: Import and Execute Encrypted Python Bytecode ---\n"
-printf "${LIGHT_GRAY}> ls pyce${GRAY}\n"
-ls pyce
-printf "${LIGHT_GRAY}> ls pyce/__pycache__${GRAY}\n"
-ls pyce/__pycache__
+printf "${LIGHT_GRAY}--- Step 4: Import and Execute Encrypted Python Bytecode ---\n"
+printf "${LIGHT_GRAY}> ls ${TMPDIR}${GRAY}\n"
+ls $TMPDIR
 printf "${YELLOW}"
-$PYTHON -c "from pyce import PYCEPathFinder; \
-            import sys; \
+$PYTHON -c "import sys; \
+            from os import chdir; \
+            from pyce import PYCEPathFinder; \
+            chdir('${TMPDIR}'); \
             PYCEPathFinder.KEYS=dict(${KEYS}); \
             sys.meta_path.insert(0, PYCEPathFinder); \
-            from pyce import hello; \
+            import hello; \
             hello.hello()"
 printf "${RESET}"
 read
 
-rm pyce/hello.pyce
-git checkout pyce/hello.py
+rm -rf $TMPDIR
