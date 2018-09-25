@@ -25,7 +25,7 @@ Example use:
 
 >>> from pyce.crypto import encrypt_path, decryptf
 >>> hash, key = encrypt_path('pyce/hello.pyc')[0]
->>> print(decryptf(hash, key))
+>>> print(decryptf('pyce/hello.pyce', key))
 """
 
 
