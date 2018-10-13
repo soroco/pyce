@@ -31,13 +31,13 @@ else
 fi
 
 printf "${LIGHT_GRAY}--- Step 0: Inspect Python Source ---${YELLOW}\n"
-printf "${LIGHT_GRAY}> pygmentize -f terminal pyce/hello.py${RESET}\n"
-pygmentize -f terminal pyce/hello.py
+printf "${LIGHT_GRAY}> pygmentize -f terminal demo/hello.py${RESET}\n"
+pygmentize -f terminal demo/hello.py
 read
 
 printf "${LIGHT_GRAY}--- Step 1: Make tmpdir, copy Python Source to tmpdir ---${YELLOW}\n"
 TMPDIR=`mktemp -d`
-cp pyce/hello.py $TMPDIR/
+cp demo/hello.py $TMPDIR/
 printf "${LIGHT_GRAY}> ls ${TMPDIR}${GRAY}\n"
 ls $TMPDIR
 read

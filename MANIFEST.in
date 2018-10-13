@@ -5,3 +5,4 @@ include NOTICE
 include README.md
 
 exclude demo.sh
+exclude demo/hello.py
