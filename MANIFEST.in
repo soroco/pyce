@@ -1,0 +1,7 @@
+include src
+include setup.py
+include LICENSE
+include NOTICE
+include README.md
+
+exclude demo.sh
