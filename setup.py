@@ -23,13 +23,25 @@ files, and loading them dynamically at runtime by changing the way that the
 `import` builtin works.
 """
 
-
-from codecs import open
+import re
 from os import path
 from setuptools import setup, find_packages
 
+here = path.abspath(path.dirname(__file__))
 
-from pyce import __version__
+
+def read(*parts):
+    with open(path.join(here, *parts), 'r') as fp:
+        return fp.read()
+
+
+def find_version(*file_paths):
+    version_file = read(*file_paths)
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
+                              version_file, re.M)
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError("Unable to find version string.")
 
 
 # Get the long description from the README file
@@ -62,8 +74,9 @@ setup(
     name='pyce',  # Required
     platforms=['Windows 10', 'Windows Server 2008', 'Windows Server 2012',
                'Linux'],  # Optional
-    packages=find_packages(exclude=[]),  # Required
+    packages=find_packages(where="src", exclude=[]),  # Required
+    package_dir={"": "src"},
     python_requires='>=3.7, <3.8',
     url='https://github.com/soroco/pyce',  # Optional
-    version=__version__,  # Required
+    version=find_version("src", "pyce", "__init__.py"),  # Required
 )
