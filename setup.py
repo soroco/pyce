@@ -52,7 +52,7 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     description='Execute encrypted Python bytecode.',  # Required
-    install_requires=['cryptography==2.3.1'],  # Optional
+    install_requires=['cryptography'],  # Optional
     keywords='cryptography encryption import pyce',  # Optional
     license='Apache Software License Version 2.0',  # Optional
     long_description=LONG_DESCRIPTION,  # Optional
