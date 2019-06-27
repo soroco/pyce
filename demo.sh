@@ -1,5 +1,5 @@
 #!/bin/bash
-#   Copyright 2017-18 Soroco Americas Private Limited
+#   Copyright 2017-19 Soroco Americas Private Limited
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -68,10 +68,9 @@ ls $TMPDIR
 printf "${YELLOW}"
 $PYTHON -c "import sys; \
             from os import chdir; \
-            from pyce import PYCEPathFinder; \
+            from pyce import add_import_hook; \
             chdir('${TMPDIR}'); \
-            PYCEPathFinder.KEYS=dict(${KEYS}); \
-            sys.meta_path.insert(0, PYCEPathFinder); \
+            add_import_hook(dict(${KEYS})); \
             import hello; \
             hello.hello()"
 printf "${RESET}"

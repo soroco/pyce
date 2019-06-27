@@ -1,4 +1,4 @@
-#   Copyright 2016-18 Soroco Americas Private Limited
+#   Copyright 2016-19 Soroco Americas Private Limited
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -164,3 +164,20 @@ class PYCEPathFinder(PathFinder):
             if sorocospec is not None:
                 break
         return sorocospec
+
+
+def add_import_hook(keys: Optional[Dict[str, str]] = None) -> None:
+    """
+    Adds the import mechanism support that enables importing pyce files.
+
+    Arguments:
+        keys: A mapping of normalized filenames to keys. (optional)
+
+    Returns:
+        None
+    """
+    if keys is None:
+        keys = {}
+
+    PYCEPathFinder.KEYS = keys
+    sys.meta_path.insert(0, PYCEPathFinder)
