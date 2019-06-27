@@ -166,7 +166,7 @@ class PYCEPathFinder(PathFinder):
         return sorocospec
 
 
-def add_import_hook(keys: Optional[Dict[str, str]] = {}) -> None:
+def add_import_hook(keys: Optional[Dict[str, str]] = None) -> None:
     """
     Adds the import mechanism support that enables importing pyce files.
 
@@ -176,5 +176,8 @@ def add_import_hook(keys: Optional[Dict[str, str]] = {}) -> None:
     Returns:
         None
     """
+    if keys is None:
+        keys = {}
+
     PYCEPathFinder.KEYS = keys
     sys.meta_path.insert(0, PYCEPathFinder)
