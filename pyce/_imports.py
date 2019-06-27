@@ -164,3 +164,17 @@ class PYCEPathFinder(PathFinder):
             if sorocospec is not None:
                 break
         return sorocospec
+
+
+def add_import_hook(keys={}):
+    """
+    Adds the import mechanism support that enables importing pyce files.
+
+    Arguments:
+        keys: A mapping of normalized filenames to keys. (optional)
+
+    Returns:
+        None
+    """
+    PYCEPathFinder.KEYS = keys
+    sys.meta_path.insert(0, PYCEPathFinder)
