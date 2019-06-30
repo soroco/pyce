@@ -24,8 +24,8 @@ Python that can load encrypted files.
 Example use:
 
 >>> from pyce.crypto import encrypt_path, decryptf
->>> path, key = encrypt_path('pyce/hello.pyc')[0]
->>> print(decryptf(path, key))
+>>> hash, key = encrypt_path('pyce/hello.pyc')[0]
+>>> print(decryptf('pyce/hello.pyce', key))
 """
 
 
@@ -79,7 +79,7 @@ def encrypt_path(path: str, extensions: Set[str] = ENC_EXT, exclusions:
         exclusions: files that should not be encrypted
 
     Returns:
-        List of all paths and their encryption key
+        List of hashes of all encrypted files with their encryption key
     """
     if exclusions is None:
         exclusions = set()
@@ -118,8 +118,8 @@ def encrypt_path(path: str, extensions: Set[str] = ENC_EXT, exclusions:
                 data = openf.read()
 
                 # hash
-                hashv = srchash(data)
-                key = hashv.digest()
+                plaintext_hash = srchash(data)
+                key = plaintext_hash.digest()
 
                 # encrypt
                 cipher = Cipher(CIPHER(key), MODE(key[0:16]), backend=BACKEND)
@@ -131,12 +131,21 @@ def encrypt_path(path: str, extensions: Set[str] = ENC_EXT, exclusions:
                 openf.write(ciphertext)
 
                 # append HMAC
-                openf.write(hmac(key, ciphertext, HMAC_HS).digest())
+                ciphertext_hmac = hmac(key, ciphertext, HMAC_HS).digest()
+                openf.write(ciphertext_hmac)
 
             new_absolute_path, ext = splitext(absolute_path)
             new_absolute_path += ext + 'e'
             rename(absolute_path, new_absolute_path)
-            manifest.append((new_absolute_path, hashv.hexdigest()))
+
+            # add the decryption key for this file together with a hash of its
+            # encrypted contents. The import mechanism will then look up the
+            # required key by producing this same hash again at runtime.
+            encrypted_data = ciphertext + ciphertext_hmac
+            ciphertext_hash = srchash(encrypted_data)
+            manifest.append(
+                (ciphertext_hash.hexdigest(), plaintext_hash.hexdigest())
+            )
 
     return manifest
 

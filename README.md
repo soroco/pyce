@@ -25,7 +25,7 @@ similar to `python3 -mcompileall -b` where `-b` does an in place compilation.
 ```python
 from pyce import encrypt_path
 encrypt_path('pyce/hello.pyc')
-[('pyce/hello.pyce', '443df1d5f9914d13ed27950dd81aa2dd9d3b708be416c388f3226ad398d71a14')]
+[('da78a5bfe655d01334d7121dc0f021de870dc11515424f528045eb5f29098504', 'd11d969ab1d345df86f4180db549f5ffc400da10d03d43e1fa93eae373199dae')]
 ```
 
 Second, register your keys and try importing from the encrypted module or
@@ -33,7 +33,7 @@ package:
 
 ```python
 from pyce import PYCEPathFinder
-PYCEPathFinder.KEYS = {'pyce/hello.pyce' : '443df1d5f9914d13ed27950dd81aa2dd9d3b708be416c388f3226ad398d71a14'}
+PYCEPathFinder.KEYS = {'da78a5bfe655d01334d7121dc0f021de870dc11515424f528045eb5f29098504': 'd11d969ab1d345df86f4180db549f5ffc400da10d03d43e1fa93eae373199dae'}
 
 import sys
 sys.meta_path.insert(0, PYCEPathFinder)
