@@ -69,8 +69,14 @@ class PYCEFileLoader(SourcelessFileLoader):
         path = self.get_filename(fullname)
         data = self.get_data(path)
 
+        # Relative paths are impossible on Windows if the target file is on a different drive letter to the working directory
+        try:
+            r_path = relpath(path)
+        except:
+            # well, we tried
+            r_path = path
         # It is important to normalize path case for platforms like Windows
-        data = decrypt(data, PYCEPathFinder.KEYS[normcase(relpath(path))])
+        data = decrypt(data, PYCEPathFinder.KEYS[normcase(r_path)])
 
         # Call _classify_pyc to do basic validation of the pyc but ignore the
         # result. There's no source to check against.
